@@ -1,0 +1,43 @@
+- [x] <!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>RSSフィードの読み込み</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    h2 { margin-bottom: 0.5em; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 0.5em 0; }
+    a { text-decoration: none; color: #007acc; }
+  </style>
+</head>
+<body>
+  <h2>最新の投稿</h2>
+  <ul id="rss-list">読み込み中...</ul>
+
+  <script>
+    fetch('https://art99.exblog.jp/index.xml')
+      .then(response => response.text())
+      .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+      .then(data => {
+        const items = data.querySelectorAll("item");
+        const list = document.getElementById("rss-list");
+        list.innerHTML = '';
+        items.forEach(item => {
+          const title = item.querySelector("title").textContent;
+          const link = item.querySelector("link").textContent;
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = link;
+          a.textContent = title;
+          a.target = "_blank";
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+      })
+      .catch(error => {
+        document.getElementById("rss-list").innerHTML = '<li>読み込み失敗：' + error + '</li>';
+      });
+  </script>
+</body>
+</html>
